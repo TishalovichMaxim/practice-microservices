@@ -12,7 +12,7 @@ public class GlobalExceptionHandlerController {
     public ResponseEntity<ExceptionInfo> handleResourceNotFound(ResourceNotFoundException e) {
         return new ResponseEntity<>(
                 new ExceptionInfo(
-                        String.format("Resource with id = %s not found", e.getResourceId())
+                        String.format("Resource with id = %d not found", e.getResourceId())
                 ),
                 HttpStatus.NOT_FOUND
         );
