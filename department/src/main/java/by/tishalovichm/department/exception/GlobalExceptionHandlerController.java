@@ -9,10 +9,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandlerController {
 
     @ExceptionHandler(value = ResourceNotFoundException.class)
-    public ResponseEntity<ExceptionInfo> handleResourceNotFound(ResourceNotFoundException e) {
+    public ResponseEntity<ExceptionInfo> handleResourceNotFound(
+            ResourceNotFoundException e) {
+
         return new ResponseEntity<>(
                 new ExceptionInfo(
-                        String.format("Resource with id = %d not found", e.getResourceId())
+                        String.format("Resource with %s = %s not found",
+                                e.getField(),
+                                e.getValue().toString())
                 ),
                 HttpStatus.NOT_FOUND
         );
