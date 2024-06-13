@@ -1,4 +1,4 @@
-package by.tishalovichm.employee.dto;
+package by.tishalovichm.employee.dto.employee;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
