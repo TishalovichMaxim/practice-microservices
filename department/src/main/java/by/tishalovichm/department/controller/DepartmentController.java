@@ -38,6 +38,27 @@ public class DepartmentController {
     }
 
     @Operation(
+            summary = "Get department by department code"
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Department found"
+                    )
+            }
+    )
+    @GetMapping("{departmentCode}")
+    public ResponseEntity<RespDepartmentDto> get(
+            @PathVariable String departmentCode) {
+
+        return new ResponseEntity<>(
+                service.get(departmentCode),
+                HttpStatus.OK
+        );
+    }
+
+    @Operation(
             summary = "Create new department"
     )
     @ApiResponses(

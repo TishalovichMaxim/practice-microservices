@@ -9,4 +9,6 @@ public interface DepartmentService {
 
     RespDepartmentDto get(Long id);
 
+    RespDepartmentDto get(String departmentCode);
+
 }
