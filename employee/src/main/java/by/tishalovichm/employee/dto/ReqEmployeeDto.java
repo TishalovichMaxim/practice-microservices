@@ -15,4 +15,6 @@ public class ReqEmployeeDto {
 
     private String email;
 
+    private String departmentCode;
+
 }

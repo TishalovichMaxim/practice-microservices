@@ -15,4 +15,6 @@ public class RespEmployeeDto {
 
     private String email;
 
+    private String departmentCode;
+
 }
