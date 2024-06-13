@@ -48,9 +48,9 @@ public class DepartmentController {
                     )
             }
     )
-    @GetMapping("{departmentCode}")
+    @GetMapping("")
     public ResponseEntity<RespDepartmentDto> get(
-            @PathVariable String departmentCode) {
+            @RequestParam String departmentCode) {
 
         return new ResponseEntity<>(
                 service.get(departmentCode),
