@@ -1,7 +1,8 @@
 package by.tishalovichm.employee.controller;
 
-import by.tishalovichm.employee.dto.ReqEmployeeDto;
-import by.tishalovichm.employee.dto.RespEmployeeDto;
+import by.tishalovichm.employee.dto.employee.ReqEmployeeDto;
+import by.tishalovichm.employee.dto.employee.RespEmployeeDto;
+import by.tishalovichm.employee.entity.EmployeeAndDepartment;
 import by.tishalovichm.employee.service.EmployeeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -33,6 +34,14 @@ public class EmployeeController {
     public ResponseEntity<RespEmployeeDto> get(@PathVariable Long id) {
         return new ResponseEntity<>(
                 service.get(id),
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/with_department/{id}")
+    public ResponseEntity<EmployeeAndDepartment> getEmployeeWithDepartment(@PathVariable Long id) {
+        return new ResponseEntity<>(
+                service.getWithDepartment(id),
                 HttpStatus.OK
         );
     }
