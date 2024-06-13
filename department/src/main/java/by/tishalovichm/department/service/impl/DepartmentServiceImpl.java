@@ -35,4 +35,14 @@ public class DepartmentServiceImpl implements DepartmentService {
         return mapper.entityToResp(department);
     }
 
+    @Override
+    @SneakyThrows
+    public RespDepartmentDto get(String departmentCode) {
+        Department department = repository.findByDepartmentCode(departmentCode)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "departmentCode", departmentCode));
+
+        return mapper.entityToResp(department);
+    }
+
 }

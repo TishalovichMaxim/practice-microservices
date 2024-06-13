@@ -5,10 +5,18 @@ import lombok.Getter;
 @Getter
 public class ResourceNotFoundException extends Exception {
 
-    private final Long resourceId;
+    private final String field;
 
-    public ResourceNotFoundException(Long resourceId) {
-        this.resourceId = resourceId;
+    private final Object value;
+
+    public ResourceNotFoundException(String field, Object value) {
+        this.field = field;
+        this.value = value;
+    }
+
+    public ResourceNotFoundException(Object value) {
+        field = "id";
+        this.value = value;
     }
 
 }
