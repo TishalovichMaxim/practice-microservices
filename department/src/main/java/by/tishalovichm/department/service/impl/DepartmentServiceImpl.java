@@ -9,7 +9,9 @@ import by.tishalovichm.department.mapper.DepartmentMapper;
 import by.tishalovichm.department.service.DepartmentService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.stereotype.Service;
 
+@Service
 @RequiredArgsConstructor
 public class DepartmentServiceImpl implements DepartmentService {
 
