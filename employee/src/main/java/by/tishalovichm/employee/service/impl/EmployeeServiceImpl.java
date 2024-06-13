@@ -50,7 +50,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee employee = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(id));
 
-        String departmentEndpoint = "localhost:8080/v1/departments/"
+        String departmentEndpoint =
+                "http://localhost:8080/v1/departments?departmentCode="
                 + employee.getDepartmentCode();
 
         ResponseEntity<ApiDepartmentDto> departmentResponse= restTemplate
