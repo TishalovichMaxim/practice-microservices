@@ -7,6 +7,7 @@ import by.tishalovichm.employee.service.EmployeeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -59,7 +60,7 @@ public class EmployeeController {
     )
     @PostMapping("")
     public ResponseEntity<RespEmployeeDto> save(
-            @RequestBody ReqEmployeeDto reqDepartmentDto) {
+            @RequestBody @Valid ReqEmployeeDto reqDepartmentDto) {
 
         return new ResponseEntity<>(
                 service.save(reqDepartmentDto),
