@@ -50,7 +50,7 @@ public class DepartmentController {
     )
     @GetMapping("")
     public ResponseEntity<RespDepartmentDto> get(
-            @RequestParam String departmentCode) {
+            @RequestParam("department-code") String departmentCode) {
 
         return new ResponseEntity<>(
                 service.get(departmentCode),
