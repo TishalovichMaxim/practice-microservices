@@ -9,17 +9,17 @@ import by.tishalovichm.employee.entity.EmployeeAndDepartment;
 import by.tishalovichm.employee.exception.ResourceNotFoundException;
 import by.tishalovichm.employee.mapper.DepartmentMapper;
 import by.tishalovichm.employee.mapper.EmployeeMapper;
+import by.tishalovichm.employee.service.DepartmentApiClient;
 import by.tishalovichm.employee.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 @RequiredArgsConstructor
 public class EmployeeServiceImpl implements EmployeeService {
 
-    private final WebClient webClient;
+    private final DepartmentApiClient departmentApiClient;
 
     private final EmployeeMapper employeeMapper;
 
@@ -49,15 +49,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee employee = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(id));
 
-        String departmentEndpoint =
-                "http://localhost:8080/v1/departments?department-code="
-                + employee.getDepartmentCode();
-
-        ApiDepartmentDto apiDepartment = webClient.get()
-                .uri(departmentEndpoint)
-                .retrieve()
-                .bodyToMono(ApiDepartmentDto.class)
-                .block();
+        ApiDepartmentDto apiDepartment = departmentApiClient.get(
+                employee.getDepartmentCode());
 
         return new EmployeeAndDepartment(
                 employeeMapper.entityToResp(employee),
