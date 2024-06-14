@@ -6,6 +6,7 @@ import by.tishalovichm.employee.dto.employee.ReqEmployeeDto;
 import by.tishalovichm.employee.dto.employee.RespEmployeeDto;
 import by.tishalovichm.employee.entity.Employee;
 import by.tishalovichm.employee.entity.EmployeeAndDepartment;
+import by.tishalovichm.employee.exception.ApiException;
 import by.tishalovichm.employee.exception.ResourceNotFoundException;
 import by.tishalovichm.employee.mapper.DepartmentMapper;
 import by.tishalovichm.employee.mapper.EmployeeMapper;
@@ -13,6 +14,7 @@ import by.tishalovichm.employee.service.DepartmentApiClient;
 import by.tishalovichm.employee.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -28,10 +30,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeRepository repository;
 
     @Override
+    @SneakyThrows
     public RespEmployeeDto save(ReqEmployeeDto dto) {
-        Employee employee = employeeMapper.reqToEntity(dto);
-
-        return employeeMapper.entityToResp(repository.save(employee));
+        try {
+            Employee employee = employeeMapper.reqToEntity(dto);
+            return employeeMapper.entityToResp(repository.save(employee));
+        } catch (DataIntegrityViolationException e) {
+            throw new ApiException("Email must be unique");
+        }
     }
 
     @Override

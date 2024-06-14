@@ -43,4 +43,16 @@ public class GlobalExceptionHandlerController {
         );
     }
 
+    @ExceptionHandler(ApiException.class)
+    public ResponseEntity<ExceptionInfo> handleApiException(
+            ApiException e) {
+
+        return new ResponseEntity<>(
+                new ExceptionInfo(
+                        e.getMessage()
+                ),
+                e.getHttpStatus()
+        );
+    }
+
 }
