@@ -12,15 +12,14 @@ import by.tishalovichm.employee.mapper.EmployeeMapper;
 import by.tishalovichm.employee.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 @RequiredArgsConstructor
 public class EmployeeServiceImpl implements EmployeeService {
 
-    private final RestTemplate restTemplate;
+    private final WebClient webClient;
 
     private final EmployeeMapper employeeMapper;
 
@@ -54,10 +53,11 @@ public class EmployeeServiceImpl implements EmployeeService {
                 "http://localhost:8080/v1/departments?department-code="
                 + employee.getDepartmentCode();
 
-        ResponseEntity<ApiDepartmentDto> departmentResponse= restTemplate
-                .getForEntity(departmentEndpoint, ApiDepartmentDto.class);
-
-        ApiDepartmentDto apiDepartment = departmentResponse.getBody();
+        ApiDepartmentDto apiDepartment = webClient.get()
+                .uri(departmentEndpoint)
+                .retrieve()
+                .bodyToMono(ApiDepartmentDto.class)
+                .block();
 
         return new EmployeeAndDepartment(
                 employeeMapper.entityToResp(employee),
