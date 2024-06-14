@@ -45,4 +45,5 @@ public class GlobalExceptionHandlerController {
                 HttpStatus.BAD_REQUEST
         );
     }
+
 }
