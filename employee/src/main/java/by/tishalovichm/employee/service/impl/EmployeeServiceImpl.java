@@ -6,13 +6,17 @@ import by.tishalovichm.employee.dto.employee.ReqEmployeeDto;
 import by.tishalovichm.employee.dto.employee.RespEmployeeDto;
 import by.tishalovichm.employee.entity.Employee;
 import by.tishalovichm.employee.entity.EmployeeAndDepartment;
+import by.tishalovichm.employee.exception.ApiException;
 import by.tishalovichm.employee.exception.ResourceNotFoundException;
 import by.tishalovichm.employee.mapper.DepartmentMapper;
 import by.tishalovichm.employee.mapper.EmployeeMapper;
 import by.tishalovichm.employee.service.DepartmentApiClient;
 import by.tishalovichm.employee.service.EmployeeService;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -28,10 +32,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeRepository repository;
 
     @Override
+    @SneakyThrows
     public RespEmployeeDto save(ReqEmployeeDto dto) {
-        Employee employee = employeeMapper.reqToEntity(dto);
-
-        return employeeMapper.entityToResp(repository.save(employee));
+        try {
+            Employee employee = employeeMapper.reqToEntity(dto);
+            return employeeMapper.entityToResp(repository.save(employee));
+        } catch (DataIntegrityViolationException e) {
+            throw new ApiException("Email must be unique");
+        }
     }
 
     @Override
@@ -49,12 +57,30 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee employee = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(id));
 
-        ApiDepartmentDto apiDepartment = departmentApiClient.get(
-                employee.getDepartmentCode());
+        try {
+            ApiDepartmentDto apiDepartment = departmentApiClient.get(
+                    employee.getDepartmentCode()
+            );
 
-        return new EmployeeAndDepartment(
-                employeeMapper.entityToResp(employee),
-                departmentMapper.apiToResp(apiDepartment)
-        );
+            return new EmployeeAndDepartment(
+                    employeeMapper.entityToResp(employee),
+                    departmentMapper.apiToResp(apiDepartment)
+            );
+        } catch (FeignException e) {
+            if (e.status() == HttpStatus.NOT_FOUND.value()) {
+                throw new ApiException(
+                        String.format(
+                                "Department with code=%s not found",
+                                employee.getDepartmentCode()
+                        ),
+                        HttpStatus.NOT_FOUND
+                );
+            }
+
+            throw new ApiException(
+                    "Error in retrieving department",
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
     }
 }

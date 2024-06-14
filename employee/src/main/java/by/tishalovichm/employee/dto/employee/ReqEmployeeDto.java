@@ -1,5 +1,7 @@
 package by.tishalovichm.employee.dto.employee;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -9,12 +11,17 @@ public class ReqEmployeeDto {
 
     private Long id;
 
+    @NotBlank
     private String firstName;
 
+    @NotBlank
     private String lastName;
 
+    @Email
+    @NotBlank
     private String email;
 
+    @NotBlank
     private String departmentCode;
 
 }
