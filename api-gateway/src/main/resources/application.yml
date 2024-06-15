@@ -2,6 +2,19 @@ spring:
   application:
     name: api-gateway
 
+  cloud:
+    gateway:
+      routes:
+      -
+        id: employee
+        uri: lb://employee
+        predicates:
+        - Path=/v1/employees/**
+      -
+        id: department
+        uri: lb://department
+        predicates:
+        - Path=/v1/departments/**
 eureka:
   instance:
     client:
