@@ -4,17 +4,10 @@ spring:
 
   cloud:
     gateway:
-      routes:
-      -
-        id: employee
-        uri: lb://employee
-        predicates:
-        - Path=/v1/employees/**
-      -
-        id: department
-        uri: lb://department
-        predicates:
-        - Path=/v1/departments/**
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
 eureka:
   instance:
     client:
@@ -23,3 +16,12 @@ eureka:
 
 server:
   port: 9191
+
+logging:
+  level:
+    org:
+      springframework:
+        cloud:
+          gateway:
+            handler:
+              RoutePredicateHandlerMapping: DEBUG
