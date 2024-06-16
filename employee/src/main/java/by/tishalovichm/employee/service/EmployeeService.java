@@ -2,7 +2,7 @@ package by.tishalovichm.employee.service;
 
 import by.tishalovichm.employee.dto.employee.ReqEmployeeDto;
 import by.tishalovichm.employee.dto.employee.RespEmployeeDto;
-import by.tishalovichm.employee.entity.EmployeeAndDepartment;
+import by.tishalovichm.employee.entity.EmployeeInfo;
 
 public interface EmployeeService {
 
@@ -10,6 +10,6 @@ public interface EmployeeService {
 
     RespEmployeeDto get(Long id);
 
-    EmployeeAndDepartment getWithDepartment(Long id);
+    EmployeeInfo getInfo(Long id);
 
 }

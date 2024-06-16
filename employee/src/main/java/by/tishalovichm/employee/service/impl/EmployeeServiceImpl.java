@@ -2,16 +2,21 @@ package by.tishalovichm.employee.service.impl;
 
 import by.tishalovichm.employee.dal.EmployeeRepository;
 import by.tishalovichm.employee.dto.department.ApiDepartmentDto;
+import by.tishalovichm.employee.dto.department.RespDepartmentDto;
 import by.tishalovichm.employee.dto.employee.ReqEmployeeDto;
 import by.tishalovichm.employee.dto.employee.RespEmployeeDto;
+import by.tishalovichm.employee.dto.organization.ApiOrganizationDto;
+import by.tishalovichm.employee.dto.organization.RespOrganizationDto;
 import by.tishalovichm.employee.entity.Employee;
-import by.tishalovichm.employee.entity.EmployeeAndDepartment;
+import by.tishalovichm.employee.entity.EmployeeInfo;
 import by.tishalovichm.employee.exception.ApiException;
 import by.tishalovichm.employee.exception.ResourceNotFoundException;
 import by.tishalovichm.employee.mapper.DepartmentMapper;
 import by.tishalovichm.employee.mapper.EmployeeMapper;
+import by.tishalovichm.employee.mapper.OrganizationMapper;
 import by.tishalovichm.employee.service.DepartmentApiClient;
 import by.tishalovichm.employee.service.EmployeeService;
+import by.tishalovichm.employee.service.OrganizationApiClient;
 import feign.FeignException;
 import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
@@ -30,11 +35,79 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private final DepartmentApiClient departmentApiClient;
 
+    private final OrganizationApiClient organizationApiClient;
+
     private final EmployeeMapper employeeMapper;
 
     private final DepartmentMapper departmentMapper;
 
+    private final OrganizationMapper organizationMapper;
+
     private final EmployeeRepository repository;
+
+    private RespDepartmentDto getDefaultDepartmentDto(String code, Exception e) {
+        LOGGER.info("getDefaultDepartment");
+
+        return null;
+    }
+
+    private RespOrganizationDto getDefaultOrganization(String code, Exception e) {
+        LOGGER.info("getDefaultOrganization");
+
+        return null;
+    }
+
+    @Retry(name = "${microservice.department.name}", fallbackMethod = "getDefaultDepartment")
+    private RespDepartmentDto getDepartment(String code) throws ApiException {
+        try {
+            ApiDepartmentDto apiDepartment = departmentApiClient.get(
+                    code
+            );
+
+            return departmentMapper.apiToResp(apiDepartment);
+        } catch (FeignException e) {
+            if (e.status() == HttpStatus.NOT_FOUND.value()) {
+                throw new ApiException(
+                        String.format(
+                                "Department with code=%s not found",
+                                code
+                        ),
+                        HttpStatus.NOT_FOUND
+                );
+            }
+
+            throw new ApiException(
+                    "Error in retrieving department",
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @Retry(name = "${microservice.organization.name}", fallbackMethod = "getDefaultOrganization")
+    private RespOrganizationDto getOrganization(String code) throws ApiException {
+        try {
+            ApiOrganizationDto apiOrganization = organizationApiClient.get(
+                    code
+            );
+
+            return organizationMapper.apiToResp(apiOrganization);
+        } catch (FeignException e) {
+            if (e.status() == HttpStatus.NOT_FOUND.value()) {
+                throw new ApiException(
+                        String.format(
+                                "Organization with code=%s not found",
+                                code
+                        ),
+                        HttpStatus.NOT_FOUND
+                );
+            }
+
+            throw new ApiException(
+                    "Error in retrieving organization",
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
 
     @Override
     @SneakyThrows
@@ -56,52 +129,24 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employeeMapper.entityToResp(employee);
     }
 
+    @SneakyThrows
     @Override
-    @SneakyThrows
-    @Retry(name = "${spring.application.name}", fallbackMethod = "getDefaultDepartment")
-    public EmployeeAndDepartment getWithDepartment(Long id) {
-        LOGGER.info("Inside getWithDepartment method");
-
+    public EmployeeInfo getInfo(Long id) {
         Employee employee = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(id));
 
-        try {
-            ApiDepartmentDto apiDepartment = departmentApiClient.get(
-                    employee.getDepartmentCode()
-            );
+        RespDepartmentDto department = getDepartment(
+                employee.getDepartmentCode()
+        );
 
-            return new EmployeeAndDepartment(
-                    employeeMapper.entityToResp(employee),
-                    departmentMapper.apiToResp(apiDepartment)
-            );
-        } catch (FeignException e) {
-            if (e.status() == HttpStatus.NOT_FOUND.value()) {
-                throw new ApiException(
-                        String.format(
-                                "Department with code=%s not found",
-                                employee.getDepartmentCode()
-                        ),
-                        HttpStatus.NOT_FOUND
-                );
-            }
+        RespOrganizationDto organization = getOrganization(
+                employee.getOrganizationCode()
+        );
 
-            throw new ApiException(
-                    "Error in retrieving department",
-                    HttpStatus.INTERNAL_SERVER_ERROR
-            );
-        }
-    }
-
-    @SneakyThrows
-    public EmployeeAndDepartment getDefaultDepartment(Long id, Exception e) {
-        LOGGER.info("Inside getDefaultDepartment method");
-
-        Employee employee = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(id));
-
-        return new EmployeeAndDepartment(
+        return new EmployeeInfo(
                 employeeMapper.entityToResp(employee),
-                null
+                department,
+                organization
         );
     }
 
