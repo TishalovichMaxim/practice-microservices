@@ -17,4 +17,6 @@ public class RespEmployeeDto {
 
     private String departmentCode;
 
+    private String organizationCode;
+
 }

@@ -21,7 +21,8 @@ public class ReqEmployeeDto {
     @NotBlank
     private String email;
 
-    @NotBlank
     private String departmentCode;
+
+    private String organizationCode;
 
 }
