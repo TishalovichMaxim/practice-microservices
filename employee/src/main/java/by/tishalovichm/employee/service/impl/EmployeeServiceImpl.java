@@ -13,9 +13,11 @@ import by.tishalovichm.employee.mapper.EmployeeMapper;
 import by.tishalovichm.employee.service.DepartmentApiClient;
 import by.tishalovichm.employee.service.EmployeeService;
 import feign.FeignException;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,8 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class EmployeeServiceImpl implements EmployeeService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(EmployeeServiceImpl.class);
 
     private final DepartmentApiClient departmentApiClient;
 
@@ -54,8 +58,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     @SneakyThrows
-    @CircuitBreaker(name = "${spring.application.name}", fallbackMethod = "getDefaultDepartment")
+    @Retry(name = "${spring.application.name}", fallbackMethod = "getDefaultDepartment")
     public EmployeeAndDepartment getWithDepartment(Long id) {
+        LOGGER.info("Inside getWithDepartment method");
+
         Employee employee = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(id));
 
@@ -88,6 +94,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @SneakyThrows
     public EmployeeAndDepartment getDefaultDepartment(Long id, Exception e) {
+        LOGGER.info("Inside getDefaultDepartment method");
+
         Employee employee = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(id));
 
