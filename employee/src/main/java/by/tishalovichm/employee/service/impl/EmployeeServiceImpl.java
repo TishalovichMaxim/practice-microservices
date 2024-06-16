@@ -13,6 +13,7 @@ import by.tishalovichm.employee.mapper.EmployeeMapper;
 import by.tishalovichm.employee.service.DepartmentApiClient;
 import by.tishalovichm.employee.service.EmployeeService;
 import feign.FeignException;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -53,6 +54,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     @SneakyThrows
+    @CircuitBreaker(name = "${spring.application.name}", fallbackMethod = "getDefaultDepartment")
     public EmployeeAndDepartment getWithDepartment(Long id) {
         Employee employee = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(id));
@@ -83,4 +85,16 @@ public class EmployeeServiceImpl implements EmployeeService {
             );
         }
     }
+
+    @SneakyThrows
+    public EmployeeAndDepartment getDefaultDepartment(Long id, Exception e) {
+        Employee employee = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(id));
+
+        return new EmployeeAndDepartment(
+                employeeMapper.entityToResp(employee),
+                null
+        );
+    }
+
 }
