@@ -9,4 +9,6 @@ public interface OrganizationService {
 
     RespOrganizationDto get(Long id);
 
+    RespOrganizationDto get(String code);
+
 }

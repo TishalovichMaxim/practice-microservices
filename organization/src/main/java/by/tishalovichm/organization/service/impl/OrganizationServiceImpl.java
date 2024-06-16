@@ -22,6 +22,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     private final OrganizationRepository repository;
 
     @SneakyThrows
+    @Override
     public RespOrganizationDto save(ReqOrganizationDto reqOrganizationDto) {
         Organization organization = mapper.reqToEntity(reqOrganizationDto);
 
@@ -34,9 +35,20 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @SneakyThrows
+    @Override
     public RespOrganizationDto get(Long id) {
         Organization organization = repository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException(id)
+        );
+
+        return mapper.entityToResp(organization);
+    }
+
+    @SneakyThrows
+    @Override
+    public RespOrganizationDto get(String code) {
+        Organization organization = repository.findByCode(code).orElseThrow(
+                () -> new ResourceNotFoundException("organization code", code)
         );
 
         return mapper.entityToResp(organization);

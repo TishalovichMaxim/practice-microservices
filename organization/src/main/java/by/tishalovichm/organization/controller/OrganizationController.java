@@ -21,6 +21,11 @@ public class OrganizationController {
         return ResponseEntity.ok(service.get(id));
     }
 
+    @GetMapping("")
+    public ResponseEntity<RespOrganizationDto> get(@RequestParam String code) {
+        return ResponseEntity.ok(service.get(code));
+    }
+
     @PostMapping
     public ResponseEntity<RespOrganizationDto> get(
             @RequestBody @Valid ReqOrganizationDto organization) {
