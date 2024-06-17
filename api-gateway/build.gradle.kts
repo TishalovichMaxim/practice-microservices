@@ -20,6 +20,11 @@ repositories {
 extra["springCloudVersion"] = "2023.0.2"
 
 dependencies {
+	implementation("io.micrometer:micrometer-observation")
+	implementation("io.zipkin.reporter2:zipkin-reporter-brave")
+	implementation("io.micrometer:micrometer-tracing-bridge-brave")
+	implementation("io.github.openfeign:feign-micrometer")
+
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.cloud:spring-cloud-starter-gateway")
 	implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
