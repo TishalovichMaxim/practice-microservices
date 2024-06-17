@@ -6,12 +6,17 @@ import by.tishalovichm.department.service.DepartmentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(
+        name = "Department Controller",
+        description = "Department controller exposes REST APIs for Department-Service"
+)
 @RestController
 @RequestMapping("v1/departments")
 @RequiredArgsConstructor
@@ -20,15 +25,14 @@ public class DepartmentController {
     private final DepartmentService service;
 
     @Operation(
-            summary = "Get department by id"
+            summary = "Get department by id",
+            description = "Used to retrieve department from db by id"
     )
     @ApiResponses(
-            value = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Department found"
-                    )
-            }
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Department found"
+            )
     )
     @GetMapping("{id}")
     public ResponseEntity<RespDepartmentDto> get(@PathVariable Long id) {
@@ -39,15 +43,14 @@ public class DepartmentController {
     }
 
     @Operation(
-            summary = "Get department by department code"
+            summary = "Get department by department code",
+            description = "Used to get retrieve department from db by code"
     )
     @ApiResponses(
-            value = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Department found"
-                    )
-            }
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Department found"
+            )
     )
     @GetMapping("")
     public ResponseEntity<RespDepartmentDto> get(
@@ -60,15 +63,14 @@ public class DepartmentController {
     }
 
     @Operation(
-            summary = "Create new department"
+            summary = "Create new department",
+            description = "Used to save new department to a database"
     )
     @ApiResponses(
-            value = {
-                    @ApiResponse(
-                            responseCode = "201",
-                            description = "Department created"
-                    )
-            }
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Department created"
+            )
     )
     @PostMapping("")
     public ResponseEntity<RespDepartmentDto> save(
