@@ -15,6 +15,12 @@ spring:
         uri: lb://department
         predicates:
         - Path=/v1/departments/**
+      -
+        id: organization
+        uri: lb://organization
+        predicates:
+          - Path=/v1/organizations/**
+
 eureka:
   instance:
     client:
