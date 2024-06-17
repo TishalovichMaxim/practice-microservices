@@ -14,11 +14,10 @@ import by.tishalovichm.employee.exception.ResourceNotFoundException;
 import by.tishalovichm.employee.mapper.DepartmentMapper;
 import by.tishalovichm.employee.mapper.EmployeeMapper;
 import by.tishalovichm.employee.mapper.OrganizationMapper;
-import by.tishalovichm.employee.service.DepartmentApiClient;
+import by.tishalovichm.employee.service.api.client.DepartmentApiClient;
+import by.tishalovichm.employee.service.api.client.OrganizationApiClient;
 import by.tishalovichm.employee.service.EmployeeService;
-import by.tishalovichm.employee.service.OrganizationApiClient;
 import feign.FeignException;
-import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
@@ -45,19 +44,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository repository;
 
-    private RespDepartmentDto getDefaultDepartmentDto(String code, Exception e) {
-        LOGGER.info("getDefaultDepartment");
-
-        return null;
-    }
-
-    private RespOrganizationDto getDefaultOrganization(String code, Exception e) {
-        LOGGER.info("getDefaultOrganization");
-
-        return null;
-    }
-
-    @Retry(name = "${microservice.department.name}", fallbackMethod = "getDefaultDepartment")
     private RespDepartmentDto getDepartment(String code) throws ApiException {
         try {
             ApiDepartmentDto apiDepartment = departmentApiClient.get(
@@ -83,7 +69,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
     }
 
-    @Retry(name = "${microservice.organization.name}", fallbackMethod = "getDefaultOrganization")
     private RespOrganizationDto getOrganization(String code) throws ApiException {
         try {
             ApiOrganizationDto apiOrganization = organizationApiClient.get(
