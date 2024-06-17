@@ -4,6 +4,13 @@ spring:
 
   cloud:
     gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: '*'
+            allowedMethods:
+              - GET
+              - POST
       routes:
       -
         id: employee
@@ -37,7 +44,7 @@ management:
 
 logging:
   pattern:
-    level: %5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]
+    level: '%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]'
   level:
     org:
       springframework:
